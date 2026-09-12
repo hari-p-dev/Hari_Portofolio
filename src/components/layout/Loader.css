@@ -1,0 +1,68 @@
+/* Shared line-mask reveal primitives (used by loader + headings) */
+.word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1;
+}
+.word-inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: var(--bg-void);
+  display: grid;
+  place-items: center;
+  will-change: transform;
+}
+
+.loader-inner {
+  width: min(90vw, 620px);
+  padding-inline: var(--gutter);
+}
+
+.loader-name {
+  font-size: clamp(3rem, 12vw, 7rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 0.9;
+}
+/* Loader name words start hidden below their mask */
+.loader-name .word-inner {
+  transform: translateY(110%);
+}
+
+.loader-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 1.6rem;
+  font-size: var(--fs-label);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0;
+}
+.loader-count {
+  color: var(--accent-primary);
+  font-size: 0.9rem;
+}
+
+.loader-bar {
+  margin-top: 1rem;
+  height: 1px;
+  width: 100%;
+  background: var(--line-soft);
+  overflow: hidden;
+}
+.loader-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  transform-origin: left center;
+}

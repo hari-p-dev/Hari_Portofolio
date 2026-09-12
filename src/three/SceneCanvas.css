@@ -1,0 +1,11 @@
+/* The WebGL world sits at the cosmos depth, above the CSS base background
+   but below all content. Non-interactive and decorative. */
+.scene-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-background-decor);
+  pointer-events: none;
+}
+.scene-canvas canvas {
+  display: block;
+}

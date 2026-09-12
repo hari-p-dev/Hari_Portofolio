@@ -1,0 +1,474 @@
+/* ============================================================
+   Floating glass command-panel navbar
+   ============================================================ */
+
+/* ---- Orbiting lavender border-light ----
+   One concentrated highlight travels around the navbar perimeter.
+   Animating a registered custom property lets the conic-gradient
+   rotate smoothly on the GPU (no layout / paint of the whole bar). */
+@property --nav-orbit-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* The rotating light layer, slightly larger than the panel. */
+.navbar-orbit {
+  position: absolute;
+  inset: -1.5px;                 /* sit just outside the 1px static border */
+  border-radius: 25.5px;         /* panel radius (24) + inset, keeps corners round */
+  padding: 1.5px;                /* border thickness of the moving light */
+  pointer-events: none;
+  z-index: 0;                    /* below all interactive content */
+  /* Most of the ring is transparent; a narrow ~14% arc carries the light.
+     Center is near-white lavender, both ends fade to transparent. */
+  background: conic-gradient(
+    from var(--nav-orbit-angle),
+    transparent 0deg,
+    transparent 308deg,
+    rgba(139, 92, 246, 0.15) 316deg,   /* #8B5CF6 soft violet */
+    rgba(183, 148, 246, 0.70) 326deg,  /* #B794F6 lavender */
+    rgba(196, 181, 253, 0.90) 333deg,  /* #C4B5FD */
+    rgba(237, 228, 255, 1) 338deg,     /* near-white lavender core */
+    rgba(196, 181, 253, 0.90) 343deg,  /* #C4B5FD */
+    rgba(183, 148, 246, 0.72) 350deg,  /* #B794F6 lavender */
+    rgba(139, 92, 246, 0.15) 356deg,   /* #8B5CF6 soft violet */
+    transparent 360deg
+  );
+  /* Punch out the middle so only the thin rounded border remains. */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: navOrbitSpin 7s linear infinite;
+  will-change: --nav-orbit-angle;
+}
+
+/* Localized soft glow that follows the moving light. Same rotating
+   gradient, blurred and slightly larger — brightest where the streak is. */
+.navbar-orbit::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 28px;
+  padding: 3px;
+  background: conic-gradient(
+    from var(--nav-orbit-angle),
+    transparent 0deg,
+    transparent 318deg,
+    rgba(167, 139, 250, 0.55) 332deg,  /* #A78BFA */
+    rgba(196, 181, 253, 0.75) 338deg,  /* #C4B5FD */
+    rgba(167, 139, 250, 0.55) 344deg,  /* #A78BFA */
+    transparent 358deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  filter: blur(4px);
+  opacity: 0.9;
+}
+
+@keyframes navOrbitSpin {
+  to { --nav-orbit-angle: 360deg; }
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-navbar);
+  display: flex;
+  justify-content: center;
+  padding: var(--nav-top) 0 0;
+  pointer-events: none; /* only the panel is interactive */
+  animation: navbarDrop 0.9s var(--ease-premium) both;
+}
+@keyframes navbarDrop {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* The floating panel itself — identical dimensions across all sections. */
+.navbar-panel {
+  pointer-events: auto;
+  position: relative;
+  width: calc(100% - 80px);
+  max-width: 1560px;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  gap: clamp(0.8rem, 2vw, 1.6rem);
+  padding: 0 clamp(1.1rem, 2vw, 1.6rem);
+  border-radius: 24px;
+  border: 1px solid rgba(124, 92, 255, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.012)),
+    linear-gradient(120deg, rgba(12, 12, 30, 0.76), rgba(10, 10, 28, 0.74) 55%, rgba(16, 12, 34, 0.76));
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  box-shadow:
+    0 18px 60px -30px rgba(70, 56, 160, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: box-shadow 0.5s var(--ease-premium), border-color 0.5s var(--ease-premium);
+}
+.navbar--scrolled .navbar-panel {
+  border-color: rgba(124, 92, 255, 0.3);
+  box-shadow:
+    0 22px 70px -30px rgba(80, 64, 190, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Pointer-following glass highlight — a soft light tracking the cursor. */
+.navbar-highlight {
+  --hl-x: 50%;
+  --hl-y: 50%;
+  --hl-o: 0;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--hl-o);
+  transition: opacity 0.4s var(--ease-premium);
+  background: radial-gradient(
+    140px 140px at var(--hl-x) var(--hl-y),
+    rgba(167, 139, 250, 0.14),
+    transparent 70%
+  );
+}
+/* Scroll-progress line along the bottom edge (width = --nav-progress). */
+.navbar-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: var(--nav-progress, 0%);
+  max-width: 100%;
+  border-radius: 0 2px 2px 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(90deg, var(--electric-blue), var(--lavender));
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.7);
+  transition: width 0.1s linear;
+}
+
+/* Keep every interactive/content child above the orbit light layer. */
+.navbar-panel > .navbar-identity,
+.navbar-panel > .navbar-divider,
+.navbar-panel > .navbar-nav,
+.navbar-panel > .navbar-status,
+.navbar-panel > .navbar-burger {
+  position: relative;
+  z-index: 1;
+}
+
+/* Subtle glowing accent points along the border */
+.navbar-panel::before,
+.navbar-panel::after {
+  content: '';
+  position: absolute;
+  border-radius: 24px;
+  pointer-events: none;
+}
+/* top-left blue + bottom purple edge glows */
+.navbar-panel::before {
+  inset: -1px;
+  background:
+    radial-gradient(40% 120% at 12% -10%, rgba(77, 163, 255, 0.35), transparent 60%),
+    radial-gradient(45% 140% at 60% 120%, rgba(124, 92, 255, 0.32), transparent 60%),
+    radial-gradient(30% 120% at 100% 50%, rgba(150, 92, 255, 0.28), transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+  opacity: 0.9;
+}
+/* faint inner top highlight line */
+.navbar-panel::after {
+  inset: 0 0 auto 0;
+  height: 1px;
+  border-radius: 24px 24px 0 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+}
+
+/* ---------- LEFT: identity ---------- */
+.navbar-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-shrink: 0;
+}
+.navbar-avatar {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(77, 163, 255, 0.18), rgba(124, 92, 255, 0.18));
+  border: 1px solid rgba(124, 92, 255, 0.3);
+  box-shadow: 0 6px 20px -6px rgba(124, 92, 255, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.navbar-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.navbar-identity-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+.navbar-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+.navbar-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  opacity: 0.85;
+}
+
+/* Dividers */
+.navbar-divider {
+  width: 1px;
+  align-self: stretch;
+  margin-block: 0.5rem;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  flex-shrink: 0;
+}
+
+/* ---------- CENTER: nav ---------- */
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-inline: auto;
+}
+.navbar-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  font-weight: 500;
+  transition: color 0.2s var(--ease-premium), background 0.2s var(--ease-premium),
+    border-color 0.2s var(--ease-premium);
+}
+.navbar-link-icon {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  color: var(--text-muted);
+  transition: color 0.2s var(--ease-premium), filter 0.2s var(--ease-premium);
+}
+.navbar-link-icon svg { width: 100%; height: 100%; }
+.navbar-link-num {
+  font-size: 0.72rem;
+  color: var(--accent-primary);
+  opacity: 0.7;
+}
+.navbar-link-label { white-space: nowrap; }
+
+.navbar-link:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+.navbar-link:hover .navbar-link-icon {
+  color: var(--accent-primary);
+  filter: drop-shadow(0 0 6px rgba(124, 92, 255, 0.6));
+}
+
+/* Active pill */
+.navbar-link.is-active {
+  color: #fff;
+  background: linear-gradient(180deg, rgba(90, 80, 200, 0.32), rgba(60, 70, 160, 0.22));
+  border-color: rgba(124, 92, 255, 0.5);
+  box-shadow: 0 8px 26px -12px rgba(124, 92, 255, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.navbar-link.is-active .navbar-link-icon {
+  color: #b9c8ff;
+  filter: drop-shadow(0 0 6px rgba(124, 92, 255, 0.7));
+}
+.navbar-link.is-active .navbar-link-num {
+  color: #8fb6ff;
+  opacity: 1;
+}
+/* Tiny glowing indicator under the active pill */
+.navbar-link-dot {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0);
+  background: var(--accent-primary);
+  box-shadow: 0 0 10px var(--accent-primary);
+  transition: transform 0.3s var(--ease-premium);
+}
+.navbar-link.is-active .navbar-link-dot {
+  transform: translateX(-50%) scale(1);
+}
+
+/* ---------- RIGHT: availability ---------- */
+.navbar-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+}
+.navbar-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #46d39a;
+  box-shadow: 0 0 8px rgba(70, 211, 154, 0.8);
+  animation: navStatusPulse 2.6s var(--ease-premium) infinite;
+  flex-shrink: 0;
+}
+@keyframes navStatusPulse {
+  0% { box-shadow: 0 0 0 0 rgba(70, 211, 154, 0.5); }
+  70% { box-shadow: 0 0 0 6px rgba(70, 211, 154, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(70, 211, 154, 0); }
+}
+
+/* ---------- Mobile burger ---------- */
+.navbar-burger {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--line-soft);
+  flex-shrink: 0;
+}
+.navbar-burger span {
+  display: block;
+  width: 20px;
+  height: 1.6px;
+  background: var(--text-primary);
+  transition: transform 0.4s var(--ease-premium), opacity 0.3s;
+}
+.navbar-burger.is-open span:first-child { transform: translateY(3.8px) rotate(45deg); }
+.navbar-burger.is-open span:last-child { transform: translateY(-3.8px) rotate(-45deg); }
+
+/* ---------- Mobile drawer ---------- */
+.navbar-mobile {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-mobile-menu);
+  padding: calc(var(--nav-h) + 1.5rem) var(--gutter) var(--gutter);
+  flex-direction: column;
+  justify-content: center;
+  background:
+    linear-gradient(180deg, rgba(20, 16, 40, 0.9), rgba(8, 8, 18, 0.94));
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity 0.4s var(--ease-premium), transform 0.4s var(--ease-premium);
+}
+.navbar-mobile.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.navbar-mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.navbar-mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  transition: background 0.3s var(--ease-premium), border-color 0.3s var(--ease-premium),
+    color 0.3s var(--ease-premium);
+}
+.navbar-mobile-link .navbar-link-icon { width: 22px; height: 22px; }
+.navbar-mobile-link .navbar-link-num { font-size: 0.75rem; }
+.navbar-mobile-label {
+  font-size: clamp(1.6rem, 7vw, 2.4rem);
+  font-weight: 500;
+  color: inherit;
+}
+.navbar-mobile-link.is-active {
+  color: #fff;
+  background: linear-gradient(180deg, rgba(90, 80, 200, 0.28), rgba(60, 70, 160, 0.18));
+  border-color: rgba(124, 92, 255, 0.45);
+}
+.navbar-mobile-link.is-active .navbar-link-icon { color: #b9c8ff; }
+.navbar-mobile-foot {
+  margin-top: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1180px) {
+  .navbar-status-text { display: none; }
+  .navbar-divider--right { display: none; }
+}
+
+@media (max-width: 920px) {
+  .navbar-nav,
+  .navbar-divider,
+  .navbar-status { display: none; }
+  .navbar-burger { display: flex; }
+  .navbar-mobile { display: flex; }
+  .navbar-panel { justify-content: space-between; }
+  .navbar-identity { margin-right: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar { animation: none; }
+  .navbar-status-dot { animation: none; }
+
+  /* Freeze the orbit; show a subtle static lavender highlight instead. */
+  .navbar-orbit {
+    animation: none;
+    background: conic-gradient(
+      from 300deg,
+      transparent 0deg,
+      transparent 308deg,
+      rgba(183, 148, 246, 0.55) 326deg,
+      rgba(237, 228, 255, 0.9) 338deg,
+      rgba(183, 148, 246, 0.55) 350deg,
+      transparent 360deg
+    );
+  }
+  .navbar-orbit::after { display: none; }
+}

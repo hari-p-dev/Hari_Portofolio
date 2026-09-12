@@ -1,0 +1,408 @@
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-top: calc(var(--nav-offset) + 2rem);
+  padding-bottom: clamp(3rem, 8vh, 6rem);
+  overflow: hidden;
+}
+
+/* Cosmic background image (Background1) */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: url('/Background1.png') center/cover no-repeat;
+}
+/* Legibility overlay: darker behind the left-side typography, more
+   purple/blue illumination behind the portrait, soft fade into the void. */
+.hero-bg-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 5, 15, 0.84) 0%,
+      rgba(3, 5, 15, 0.55) 45%,
+      rgba(3, 5, 15, 0.28) 75%,
+      rgba(3, 5, 15, 0.48) 100%
+    ),
+    linear-gradient(180deg, transparent 55%, var(--bg-void) 100%);
+}
+
+.hero-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  width: 100%;
+}
+
+/* ---------- LEFT: copy ---------- */
+.hero-copy {
+  max-width: 620px;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.28em;
+  color: var(--text-secondary);
+  margin-bottom: 1.4rem;
+}
+.hero-eyebrow-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  box-shadow: 0 0 12px var(--accent-primary);
+}
+
+.hero-name {
+  font-size: var(--fs-hero);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+.hero-name .word-inner {
+  display: inline-block;
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #cfd6e6 55%, #9aa6bd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+/* Cinematic light sweep across the name (driven by GSAP --sweep). */
+@property --sweep {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: -120%;
+}
+.hero-name .word-inner::after {
+  content: attr(data-word);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    transparent calc(var(--sweep) - 12%),
+    rgba(255, 255, 255, 0.95) var(--sweep),
+    transparent calc(var(--sweep) + 12%),
+    transparent 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  pointer-events: none;
+}
+
+.hero-role {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.1rem, 3vw, 2rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  margin-top: 0.4rem;
+  margin-bottom: 1.8rem;
+}
+
+.hero-statement {
+  font-size: var(--fs-lead);
+  color: var(--text-secondary);
+  line-height: 1.65;
+  max-width: 44ch;
+  margin-bottom: 2.2rem;
+}
+
+/* CTAs */
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.6rem;
+}
+
+/* Connect row */
+.hero-connect {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+.hero-connect-label {
+  font-size: var(--fs-label);
+  letter-spacing: 0.24em;
+  color: var(--text-muted);
+}
+.hero-connect-icons {
+  display: flex;
+  gap: 1rem;
+}
+.hero-connect-icons a {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--line-soft);
+  color: var(--text-secondary);
+  transition: color 0.35s var(--ease-premium), border-color 0.35s var(--ease-premium),
+    background 0.35s var(--ease-premium), transform 0.35s var(--ease-premium);
+}
+.hero-connect-icons a:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+  background: var(--accent-soft);
+  transform: translateY(-2px);
+}
+
+/* ---------- RIGHT: portrait + code ---------- */
+.hero-visual {
+  position: relative;
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  perspective: 1200px;
+}
+
+.hero-portrait-stage {
+  position: relative;
+  width: min(100%, 460px);
+  aspect-ratio: 4 / 5;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Radial illumination behind the portrait — localized, purposeful. */
+.hero-portrait-stage::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  width: 128%;
+  height: 118%;
+  border-radius: 50%;
+  background: radial-gradient(
+    50% 50% at 50% 45%,
+    rgba(124, 92, 255, 0.32) 0%,
+    rgba(77, 163, 255, 0.14) 45%,
+    transparent 72%
+  );
+  filter: blur(6px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Glowing ring behind the portrait */
+.hero-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 112%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  background:
+    conic-gradient(from 200deg, rgba(77, 163, 255, 0), rgba(124, 92, 255, 0.9), rgba(167, 139, 250, 0.6), rgba(77, 163, 255, 0)) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 24px rgba(124, 92, 255, 0.4));
+  animation: ringSpin 24s linear infinite;
+}
+@keyframes ringSpin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Portrait sits inside a futuristic glass profile module. */
+.hero-portrait {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 82%;
+  height: 92%;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  padding: 6px;
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015)),
+    var(--glass-bg-strong);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow:
+    0 40px 100px -40px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(124, 92, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.hero-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  border-radius: calc(var(--radius-xl) - 6px);
+  filter: saturate(1.05) contrast(1.05);
+  /* Soften only the display edge (bottom), never the face. */
+  -webkit-mask-image: linear-gradient(180deg, #000 82%, rgba(0, 0, 0, 0.85) 100%);
+  mask-image: linear-gradient(180deg, #000 82%, rgba(0, 0, 0, 0.85) 100%);
+}
+/* Cool→violet rim grade + subtle bottom fade to seat the portrait. */
+.hero-portrait::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: calc(var(--radius-xl) - 6px);
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 60%, rgba(5, 7, 18, 0.55) 100%),
+    radial-gradient(80% 60% at 20% 25%, rgba(77, 163, 255, 0.18), transparent 60%),
+    radial-gradient(70% 60% at 85% 75%, rgba(124, 92, 255, 0.16), transparent 60%);
+}
+
+/* Cursor-driven holographic rim light — a soft highlight that tracks the
+   pointer across the glass. Screen-blended so it lifts without washing out. */
+.hero-rim {
+  --rx: 50%;
+  --ry: 45%;
+  position: absolute;
+  inset: 6px;
+  border-radius: calc(var(--radius-xl) - 6px);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    38% 38% at var(--rx) var(--ry),
+    rgba(180, 205, 255, 0.28),
+    rgba(167, 139, 250, 0.1) 45%,
+    transparent 70%
+  );
+  transition: background 0.2s linear;
+}
+
+/* Floating technical HUD annotations around the portrait. */
+.hero-hud {
+  position: absolute;
+  inset: -6% -10%;
+  pointer-events: none;
+}
+.hero-hud-item {
+  position: absolute;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--line-faint);
+  border-radius: 6px;
+  background: rgba(8, 10, 20, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+.hero-hud-item::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 0.45rem;
+  border-radius: 50%;
+  background: var(--lavender);
+  box-shadow: 0 0 6px var(--lavender);
+  vertical-align: middle;
+}
+.hero-hud--tl { top: 4%; left: -4%; }
+.hero-hud--tr { top: 12%; right: -6%; }
+.hero-hud--bl { bottom: 16%; left: -6%; }
+.hero-hud--br { bottom: 6%; right: -2%; }
+
+/* Floating code snippet — restrained HUD panel */
+.hero-code {
+  position: absolute;
+  right: -4%;
+  bottom: 6%;
+  font-size: var(--fs-label);
+  line-height: 1.7;
+  color: var(--text-secondary);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 50px -30px rgba(124, 92, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  margin: 0;
+  z-index: 3;
+}
+.hero-code .c-key { color: var(--lavender); }
+.hero-code .c-var { color: #6fb0ff; }
+.hero-code .c-prop { color: #e0a869; }
+.hero-code .c-str { color: var(--green); }
+
+.hero-note {
+  position: absolute;
+  right: 2%;
+  bottom: 8%;
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  text-align: right;
+  line-height: 1.7;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .hero-visual {
+    order: -1;
+    min-height: auto;
+  }
+  .hero-portrait-stage {
+    width: min(74vw, 340px);
+  }
+  .hero-bg-fade {
+    background:
+      linear-gradient(180deg, rgba(5, 6, 8, 0.35) 0%, rgba(5, 6, 8, 0.75) 60%, var(--bg-void) 100%);
+  }
+  .hero-copy {
+    max-width: none;
+  }
+  .hero-code { right: -1%; }
+  .hero-note { display: none; }
+  .hero-hud--tr, .hero-hud--bl { display: none; }
+}
+
+@media (max-width: 540px) {
+  .hero-cta .magnetic { flex: 1 1 auto; }
+  .hero-code {
+    position: static;
+    margin-top: 1.2rem;
+    display: inline-block;
+  }
+  .hero-hud { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-ring { animation: none; }
+  /* Keep the name fully visible; no sweep. */
+  .hero-name .word-inner::after { display: none; }
+  .hero-rim { display: none; }
+}

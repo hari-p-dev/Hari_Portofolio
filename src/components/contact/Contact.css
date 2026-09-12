@@ -1,0 +1,350 @@
+.contact {
+  position: relative;
+  z-index: 2;
+  padding-top: calc(var(--nav-offset) + clamp(2rem, 6vw, 5rem));
+  padding-bottom: var(--section-pb);
+  min-height: 90svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  isolation: isolate;
+}
+/* Cosmic finale backdrop (planet-rise scene), dimmed. */
+.contact::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: url('/Background3.png') center/cover no-repeat;
+  opacity: 0.3;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%);
+  mask-image: linear-gradient(180deg, transparent, #000 30%);
+}
+/* Central darkening + gentle vignette so text stays dominant. */
+.contact::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 45% at 50% 32%, rgba(3, 5, 15, 0.72) 0%, transparent 70%),
+    radial-gradient(130% 110% at 50% 50%, transparent 55%, rgba(3, 5, 15, 0.6) 100%);
+}
+/* Large blurred gradient orb behind the composition. */
+.contact-orb {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  width: min(60vw, 640px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(124, 92, 255, 0.22), rgba(77, 163, 255, 0.08) 45%, transparent 70%);
+  filter: blur(20px);
+}
+/* Subtle concentric rings around the center. */
+.contact-rings {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  width: min(80vw, 900px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 29%, rgba(167, 139, 250, 0.06) 30%, transparent 31%),
+    radial-gradient(circle, transparent 44%, rgba(77, 163, 255, 0.05) 45%, transparent 46%),
+    radial-gradient(circle, transparent 59%, rgba(167, 139, 250, 0.04) 60%, transparent 61%);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 72%);
+  mask-image: radial-gradient(circle, #000 0%, transparent 72%);
+}
+
+.contact-inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.contact-title {
+  font-size: var(--fs-headline);
+  line-height: 1.04;
+  margin: 1.6rem 0 1.4rem;
+}
+.contact-title-line {
+  display: block;
+  color: #fff;
+}
+.contact-title-line--accent {
+  color: transparent;
+  background: linear-gradient(100deg, var(--electric-blue), var(--lavender));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  /* padding stops the gradient text from clipping descenders (g, y). */
+  padding-bottom: 0.12em;
+  filter: drop-shadow(0 0 26px rgba(124, 92, 255, 0.35));
+  animation: contactAccentGlow 4.5s var(--ease-premium) infinite;
+}
+@keyframes contactAccentGlow {
+  0%, 100% { filter: drop-shadow(0 0 22px rgba(124, 92, 255, 0.28)); }
+  50% { filter: drop-shadow(0 0 34px rgba(124, 92, 255, 0.5)); }
+}
+
+.contact-sub {
+  max-width: 52ch;
+  color: var(--text-secondary);
+  font-size: var(--fs-lead);
+  line-height: 1.7;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+/* ---- Premium CTA panel ---- */
+.contact-panel {
+  position: relative;
+  width: min(100%, 560px);
+  padding: clamp(1.8rem, 4vw, 2.8rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: transform 0.4s var(--ease-premium), border-color 0.4s var(--ease-premium),
+    box-shadow 0.4s var(--ease-premium);
+}
+.contact-panel:hover {
+  transform: translateY(-4px);
+  border-color: var(--glass-border-hover);
+  box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.9), 0 0 60px -26px var(--glass-glow);
+}
+/* Light sweep on hover. */
+.contact-panel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(167, 139, 250, 0.12), transparent);
+  transform: skewX(-18deg);
+  opacity: 0;
+  pointer-events: none;
+}
+.contact-panel:hover::after {
+  animation: contactPanelSweep 0.9s var(--ease-premium);
+}
+@keyframes contactPanelSweep {
+  0% { left: -60%; opacity: 0; }
+  25% { opacity: 1; }
+  100% { left: 120%; opacity: 0; }
+}
+
+.contact-avail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.contact-avail-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(53, 230, 165, 0.8);
+  animation: contactAvailPulse 2.6s var(--ease-premium) infinite;
+}
+@keyframes contactAvailPulse {
+  0% { box-shadow: 0 0 0 0 rgba(53, 230, 165, 0.5); }
+  70% { box-shadow: 0 0 0 7px rgba(53, 230, 165, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(53, 230, 165, 0); }
+}
+.contact-panel-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  color: var(--text-primary);
+  margin-top: 0.3rem;
+}
+.contact-panel-note {
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+.contact-cta {
+  margin-top: 0.6rem;
+  font-size: 1rem;
+  padding: 1.05rem 2rem;
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+}
+.contact-cta-sweep {
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-18deg);
+  pointer-events: none;
+  opacity: 0;
+}
+.contact-cta:hover .contact-cta-sweep {
+  animation: contactSweep 0.9s var(--ease-premium);
+}
+@keyframes contactSweep {
+  0% { left: -40%; opacity: 0; }
+  20% { opacity: 1; }
+  100% { left: 120%; opacity: 0; }
+}
+.contact-panel-sla {
+  font-size: var(--fs-label);
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+/* ---- Contact option cards ---- */
+.contact-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.8rem, 1.5vw, 1.1rem);
+  width: min(100%, 900px);
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+.contact-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.3rem 1.2rem;
+  text-align: left;
+  border-radius: var(--radius-lg);
+  transition: transform 0.35s var(--ease-premium), border-color 0.35s var(--ease-premium),
+    box-shadow 0.35s var(--ease-premium);
+}
+.contact-option:hover {
+  transform: translateY(-4px);
+  border-color: var(--glass-border-hover);
+  box-shadow: 0 26px 60px -46px rgba(0, 0, 0, 0.9), 0 0 34px -20px var(--glass-glow);
+}
+.contact-option-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  color: var(--lavender);
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid var(--glass-border);
+  transition: color 0.35s var(--ease-premium), box-shadow 0.35s var(--ease-premium);
+}
+.contact-option-icon svg { width: 18px; height: 18px; }
+.contact-option:hover .contact-option-icon {
+  color: #fff;
+  box-shadow: 0 0 16px -2px rgba(167, 139, 250, 0.8);
+}
+.contact-option-label {
+  font-size: var(--fs-label);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 0.3rem;
+}
+.contact-option-note {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.contact-option-cta {
+  margin-top: 0.3rem;
+  font-size: var(--fs-label);
+  color: var(--lavender);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.contact-option-arrow {
+  transition: transform 0.35s var(--ease-premium);
+}
+.contact-option:hover .contact-option-arrow {
+  transform: translateX(4px);
+}
+
+/* ---- Secondary details ---- */
+.contact-detail {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem 1.6rem;
+  margin-top: clamp(2rem, 4vw, 2.6rem);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.contact-detail-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  transition: color 0.3s var(--ease-premium);
+}
+a.contact-detail-item:hover {
+  color: var(--lavender);
+}
+.contact-detail-ico {
+  display: grid;
+  place-items: center;
+  color: var(--lavender);
+}
+.contact-detail-ico svg { width: 15px; height: 15px; }
+
+/* Finale horizon glow. */
+.contact-horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% 120%, rgba(124, 92, 255, 0.22), transparent 60%),
+    linear-gradient(180deg, transparent, rgba(124, 92, 255, 0.06));
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 60%);
+  mask-image: linear-gradient(180deg, transparent, #000 60%);
+}
+
+/* When the WebGL planet is present, dim the CSS backdrop image. */
+html.webgl-active .contact::before {
+  opacity: 0.12;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 860px) {
+  .contact-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  .contact-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-title-line--accent { animation: none; }
+  .contact-panel:hover,
+  .contact-option:hover { transform: none; }
+  .contact-panel:hover::after,
+  .contact-cta:hover .contact-cta-sweep { animation: none; }
+  .contact-avail-dot { animation: none; }
+}

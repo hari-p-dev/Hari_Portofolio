@@ -1,0 +1,57 @@
+.magnetic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+  position: relative;
+}
+
+.magnetic-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  will-change: transform;
+}
+
+/* ============================================================
+   Two canonical button styles used site-wide:
+   .btn-gradient (primary)  ·  .btn-outline (secondary)
+   ============================================================ */
+.btn-gradient {
+  padding: 1rem 1.9rem;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 14px 40px -14px rgba(124, 92, 255, 0.7);
+  transition: box-shadow 0.4s var(--ease-premium);
+}
+.btn-gradient:hover {
+  box-shadow: 0 18px 50px -12px rgba(124, 92, 255, 0.9);
+}
+
+.btn-outline {
+  padding: 1rem 1.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line-strong);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: border-color 0.4s var(--ease-premium), background 0.4s var(--ease-premium);
+}
+.btn-outline:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-soft);
+}
+
+.btn-arrow {
+  transition: transform 0.4s var(--ease-premium);
+}
+.magnetic:hover .btn-arrow {
+  transform: translateX(4px);
+}
